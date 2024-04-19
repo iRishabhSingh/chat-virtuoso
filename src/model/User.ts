@@ -10,6 +10,7 @@ export interface User extends Document {
   phoneNumber?: string;
   alternateEmail?: string;
   isVerified: boolean;
+  verificationCodeExpiry: Date;
   settings: {
     darkMode: boolean;
     language?: string;
@@ -65,6 +66,12 @@ const UserSchema: Schema<User> = new Schema(
     },
     alternateEmail: {
       type: String,
+    },
+    isVerified: {
+      type: Boolean,
+    },
+    verificationCodeExpiry: {
+      type: Date,
     },
     settings: {
       darkMode: {
