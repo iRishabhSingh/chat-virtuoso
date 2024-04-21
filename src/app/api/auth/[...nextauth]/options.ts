@@ -7,6 +7,7 @@ import User from "@/model/User";
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
+      id: "credentials",
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text", placeholder: "Email" },
@@ -55,7 +56,19 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, token }) {
       if (token) {
-        session.user = token;
+        session.user._id = token._id;
+        session.user.name = token.name;
+        session.user.email = token.email;
+        session.user.username = token.username;
+        session.user.profilePicture = token.profilePicture;
+        session.user.phoneNumber = token.phoneNumber;
+        session.user.alternateEmail = token.alternateEmail;
+        session.user.isVerified = token.isVerified;
+        session.user.settings = token.settings;
+        session.user.chats = token.chats;
+        session.user.activity = token.activity;
+        session.user.updatedAt = token.updatedAt;
+        session.user.createdAt = token.createdAt;
       }
       return session;
     },
