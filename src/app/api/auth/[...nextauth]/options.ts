@@ -1,8 +1,9 @@
+import bcrypt from "bcryptjs";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import dbConnect from "@/lib/dbConnect";
+
 import User from "@/model/User";
+import dbConnect from "@/lib/dbConnect";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -17,17 +18,10 @@ export const authOptions: NextAuthOptions = {
         dbConnect();
 
         try {
-          const user = await User.findOne({
-            $or: [
-              { email: credentials.identifier },
-              { username: credentials.identifier },
-            ],
-          });
+          const user = await User.findOne({ email: credentials.email });
 
           if (!user) {
-            throw new Error(
-              `No user found with input ${credentials.identifier}`
-            );
+            throw new Error(`Email ${credentials.email} is not registered.`);
           }
 
           const validPassword = await bcrypt.compare(

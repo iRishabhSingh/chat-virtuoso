@@ -1,0 +1,17 @@
+@keyframes moveUpDown {
+	0% {
+		transform: translateY(10px);
+	}
+
+	50% {
+		transform: translateY(-10px);
+	}
+
+	100% {
+		transform: translateY(10px);
+	}
+}
+
+.animate-custom {
+	animation: moveUpDown 5s infinite;
+}
