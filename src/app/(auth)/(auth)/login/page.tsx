@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 
-export default function Signin() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -76,7 +76,7 @@ export default function Signin() {
       if (response?.ok) {
         toast({
           title: "Login Successful 🎉",
-          description: `Welcome back to Chat Virtuoso`,
+          description: `Welcome back to Chat Virtuoso! 🤝`,
         });
         router.replace("/");
       }
