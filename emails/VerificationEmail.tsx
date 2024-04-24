@@ -24,7 +24,7 @@ export default function VerificationEmail({
   email,
   username,
   verificationCode,
-}: VerificationEmailProps) {
+}: Readonly<VerificationEmailProps>) {
   return (
     <Html>
       <Head>
