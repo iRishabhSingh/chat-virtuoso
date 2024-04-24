@@ -4,8 +4,9 @@ export const usernameValidation = z
   .string()
   .min(5, { message: "Username must be at least of 5 characters long." })
   .max(14, { message: "Username should not be more than 14 characters long" })
-  .regex(/^[a-zA-Z][a-zA-Z0-9_.]{4,13}$/, {
-    message: "Username must start with a letter",
+  .regex(/^[a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z0-9_]+)?$/, {
+    message:
+      "Username must start with a letter and can include numbers, (_), and (.). No consecutive (.) are allowed.",
   });
 
 export const emailValidation = z

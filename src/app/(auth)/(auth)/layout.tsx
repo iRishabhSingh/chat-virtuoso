@@ -1,9 +1,11 @@
 import React from "react";
 import Image from "next/image";
 
+import "./animate.css";
+
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="w-screen h-screen flex lg:grid lg:min-h-[600px] lg:grid-cols-2 items-center justify-center">
+    <div className="w-screen h-screen flex lg:grid lg:min-h-[600px] lg:grid-cols-2 sm:items-center justify-center h-[">
       <div className="hidden lg:block">
         <div className="h-screen flex items-center justify-end">
           <Image
@@ -17,7 +19,9 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
           />
         </div>
       </div>
-      <div className="flex items-center justify-center">{children}</div>
+      <div className="flex sm:items-center justify-center overflow-auto">
+        {children}
+      </div>
     </div>
   );
 };
