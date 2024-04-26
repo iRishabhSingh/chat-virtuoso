@@ -11,7 +11,7 @@ export async function sendVerificationEmail(
     await resend.emails.send({
       from: "onboarding@resend.dev",
       to: email,
-      subject: "Hello World",
+      subject: "Verification Code | ChatVirtuoso",
       react: VerificationEmail({ email, username, verificationCode }),
     });
 

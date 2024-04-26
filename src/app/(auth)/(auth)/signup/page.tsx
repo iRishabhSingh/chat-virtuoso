@@ -1,10 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 
+import ProfileSetupForm from "./ProfileSetupForm";
 import { useToast } from "@/components/ui/use-toast";
 import { signUpSchema } from "@/schema/signUpSchema";
 import RequiredAuthDetails from "./RequiredAuthDetails";
+import { signIn } from "next-auth/react";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -14,10 +15,11 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const router = useRouter();
+  const [signedUp, setSignedUp] = useState(false);
+
   const { toast } = useToast();
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     if (!name || !email || !username || !password || !confirmPassword) {
       return toast({
         title: "⚠️ Please fill in all the fields",
@@ -47,6 +49,58 @@ const Signup = () => {
           "Please read and accept the terms and conditions to proceed.",
       });
     }
+
+    try {
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, username, password }),
+      });
+
+      if (response.status === 200) {
+        setSignedUp(true);
+        toast({
+          title: "Account created successfully. 🎉",
+          description: `Hi ${name}! welcome to Virtuoso.`,
+        });
+
+        // Sign in the user after account creation
+        const signInResponse = await signIn("credentials", {
+          redirect: false,
+          email,
+          password,
+        });
+
+        if (signInResponse?.error) {
+          toast({
+            title: "Account created but unable to sign in.",
+            description: signInResponse.error,
+          });
+        }
+        return;
+      }
+
+      if (response.status === 400) {
+        return toast({
+          title: "👾 Credentials already in use",
+          description:
+            "Please make sure you are using a unique email and username.",
+        });
+      }
+
+      if (response.status !== 400) {
+        return toast({
+          title: "Error creating account",
+          description: "We have an error creating the account",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      return toast({
+        title: "⚠️ Something went wrong",
+        description: "Please try again later.",
+      });
+    }
   };
 
   const validationCheck = ({
@@ -68,18 +122,22 @@ const Signup = () => {
 
   return (
     <div className="p-[10%] sm:p-0 lg:py-8 mx-auto grid sm:w-[350px] gap-6">
-      <RequiredAuthDetails
-        password={password}
-        handleSignup={handleSignup}
-        confirmPassword={confirmPassword}
-        termsConditions={termsConditions}
-        setName={setName}
-        setEmail={setEmail}
-        setUsername={setUsername}
-        setPassword={setPassword}
-        setConfirmPassword={setConfirmPassword}
-        setTermsConditions={setTermsConditions}
-      />
+      {signedUp && <ProfileSetupForm name={name} username={username} />}
+
+      {!signedUp && (
+        <RequiredAuthDetails
+          password={password}
+          handleSignup={handleSignup}
+          confirmPassword={confirmPassword}
+          termsConditions={termsConditions}
+          setName={setName}
+          setEmail={setEmail}
+          setUsername={setUsername}
+          setPassword={setPassword}
+          setConfirmPassword={setConfirmPassword}
+          setTermsConditions={setTermsConditions}
+        />
+      )}
     </div>
   );
 };

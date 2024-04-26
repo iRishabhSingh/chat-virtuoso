@@ -50,6 +50,7 @@ const Logout = ({ className }: { className?: string }) => {
     return session ? (
       <AlertDialog>
         <AlertDialogTrigger
+          asChild
           className={`w-full max-w-[236px] h-12 ${className}`}
         >
           <Button className={`w-full max-w-[236px] h-12 ${className}`}>

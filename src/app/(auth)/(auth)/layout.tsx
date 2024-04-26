@@ -19,7 +19,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
           />
         </div>
       </div>
-      <div className="flex sm:items-center justify-center overflow-auto">
+      <div className="p-2 flex sm:items-center justify-center overflow-auto">
         {children}
       </div>
     </div>

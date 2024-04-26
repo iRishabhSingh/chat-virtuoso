@@ -8,8 +8,7 @@ export async function POST(request: Request) {
   dbConnect();
 
   try {
-    const { name, username, email, oneTimePassword, password } =
-      await request.json();
+    const { name, username, email, password } = await request.json();
 
     const emailExists = await User.findOne({ email });
 
@@ -34,18 +33,7 @@ export async function POST(request: Request) {
     verificationCodeExpiry.setMinutes(verificationCodeExpiry.getMinutes() + 10);
 
     // Generating verification code for user to verify their email.
-    const verificationCode = Math.floor(100000 + Math.random() * 9000000) + "";
-
-    if (verificationCode === oneTimePassword) {
-      return Response.json(
-        {
-          success: false,
-          message:
-            "The code provided is incorrect. Please review the email we have sent you.",
-        },
-        { status: 400 }
-      );
-    }
+    const verificationCode = Math.floor(100000 + Math.random() * 900000) + "";
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
@@ -55,8 +43,6 @@ export async function POST(request: Request) {
       password: hashedPassword,
       isVerified: false,
       verificationCodeExpiry,
-      settings: [],
-      chats: [],
       activity: {
         lastLogin: currentTime,
         loginHistory: [currentTime],

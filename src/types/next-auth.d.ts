@@ -10,6 +10,7 @@ declare module "next-auth" {
     password: string;
     profilePicture?: string;
     phoneNumber?: string;
+    country?: string;
     alternateEmail?: string;
     isVerified: boolean;
     verificationCodeExpiry: Date;
@@ -48,6 +49,7 @@ declare module "next-auth" {
       email: string;
       password: string;
       profilePicture?: string;
+      country?: string;
       phoneNumber?: string;
       alternateEmail?: string;
       isVerified: boolean;
@@ -89,6 +91,7 @@ declare module "next-auth/jwt" {
     email: string;
     password: string;
     profilePicture?: string;
+    country?: string;
     phoneNumber?: string;
     alternateEmail?: string;
     isVerified: boolean;
