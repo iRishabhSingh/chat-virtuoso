@@ -6,17 +6,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useToast } from "@/components/ui/use-toast";
 
 const ProfileDetailsForm = ({
   name,
+  email,
   username,
 }: {
   name: string;
+  email: string;
   username: string;
 }) => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [alternateEmail, setAlternateEmail] = useState<string | null>(null);
 
   const router = useRouter();
+  const { toast } = useToast();
 
   const nameAvatarFallback = (name: string) => {
     const initials = name.match(/\b\w/g) || [];
@@ -40,6 +45,53 @@ const ProfileDetailsForm = ({
 
   const onSkip = () => {
     router.replace("/");
+  };
+
+  const handleAlternateEmailChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setAlternateEmail(e.target.value);
+  };
+
+  const onContinue = async () => {
+    if (!alternateEmail) {
+      toast({
+        title: "Recommendation",
+        description:
+          "It is recommended that you provide an alternate email or you can skip anyway.",
+      });
+    }
+
+    try {
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, profileImage, alternateEmail }),
+      });
+
+      if (response.status === 404) {
+        toast({
+          title: "Invalid Credentials 😕",
+          description: response.statusText,
+        });
+
+        if (response.url) router.replace("/");
+      }
+
+      if (response.status === 200) {
+        router.replace("/");
+        return toast({
+          title: "Account created successfully. 🎉",
+          description: `Hi, ${name}! welcome to Virtuoso.`,
+        });
+      }
+    } catch (error: any) {
+      console.error("We had an error updating your profile.");
+      return toast({
+        title: "We had an error updating your profile.",
+        description: error.message,
+      });
+    }
   };
 
   return (
@@ -83,12 +135,13 @@ const ProfileDetailsForm = ({
         <Input
           id="email"
           type="email"
+          onChange={handleAlternateEmailChange}
           placeholder="secondaryemail@example.com"
           required
         />
       </div>
       <div className="grid gap-2">
-        <Button type="submit" className="w-full">
+        <Button type="submit" onClick={onContinue} className="w-full">
           Continue
         </Button>
         <Button onClick={onSkip} variant="ghost">

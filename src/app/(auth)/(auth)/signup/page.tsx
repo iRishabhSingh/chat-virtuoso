@@ -122,7 +122,9 @@ const Signup = () => {
 
   return (
     <div className="p-[10%] sm:p-0 lg:py-8 mx-auto grid sm:w-[350px] gap-6">
-      {signedUp && <ProfileSetupForm name={name} username={username} />}
+      {signedUp && (
+        <ProfileSetupForm name={name} email={email} username={username} />
+      )}
 
       {!signedUp && (
         <RequiredAuthDetails
