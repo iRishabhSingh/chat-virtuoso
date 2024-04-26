@@ -6,16 +6,16 @@ export interface User extends Document {
   username: string;
   email: string;
   password: string;
-  profilePicture?: string;
-  country?: string;
-  phoneNumber?: string;
-  alternateEmail?: string;
+  profilePicture: string;
+  country: string;
+  phoneNumber: string;
+  alternateEmail: string;
   isVerified: boolean;
   verificationCodeExpiry: Date;
   settings: {
     darkMode: boolean;
-    language?: string;
-    notifications?: {
+    language: string;
+    notifications: {
       email: boolean;
       push: boolean;
     };
@@ -61,30 +61,36 @@ const UserSchema: Schema<User> = new Schema(
     },
     profilePicture: {
       type: String,
+      default: "",
     },
     country: {
       type: String,
+      default: "",
     },
     phoneNumber: {
       type: String,
+      default: "",
     },
     alternateEmail: {
       type: String,
+      default: "",
     },
     isVerified: {
       type: Boolean,
+      default: false,
     },
     verificationCodeExpiry: {
       type: Date,
+      required: true,
     },
     settings: {
       darkMode: {
         type: Boolean,
-        required: true,
         default: true,
       },
       language: {
         type: String,
+        default: "en",
       },
       notifications: {
         email: {

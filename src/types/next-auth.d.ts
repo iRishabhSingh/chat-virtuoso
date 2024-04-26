@@ -3,21 +3,21 @@ import { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
   interface User {
-    _id?: string;
+    _id: string;
     name: string;
     username: string;
     email: string;
     password: string;
-    profilePicture?: string;
-    phoneNumber?: string;
-    country?: string;
-    alternateEmail?: string;
+    profilePicture: string;
+    phoneNumber: string;
+    country: string;
+    alternateEmail: string;
     isVerified: boolean;
     verificationCodeExpiry: Date;
     settings: {
       darkMode: boolean;
-      language?: string;
-      notifications?: {
+      language: string;
+      notifications: {
         email: boolean;
         push: boolean;
       };
@@ -43,21 +43,21 @@ declare module "next-auth" {
 
   interface Session {
     user: {
-      _id?: string;
+      _id: string;
       name: string;
       username: string;
       email: string;
       password: string;
-      profilePicture?: string;
-      country?: string;
-      phoneNumber?: string;
-      alternateEmail?: string;
+      profilePicture: string;
+      country: string;
+      phoneNumber: string;
+      alternateEmail: string;
       isVerified: boolean;
       verificationCodeExpiry: Date;
       settings: {
         darkMode: boolean;
-        language?: string;
-        notifications?: {
+        language: string;
+        notifications: {
           email: boolean;
           push: boolean;
         };
@@ -85,21 +85,21 @@ declare module "next-auth" {
 
 declare module "next-auth/jwt" {
   interface JWT {
-    _id?: string;
+    _id: string;
     name: string;
     username: string;
     email: string;
     password: string;
-    profilePicture?: string;
-    country?: string;
-    phoneNumber?: string;
-    alternateEmail?: string;
+    profilePicture: string;
+    country: string;
+    phoneNumber: string;
+    alternateEmail: string;
     isVerified: boolean;
     verificationCodeExpiry: Date;
     settings: {
       darkMode: boolean;
-      language?: string;
-      notifications?: {
+      language: string;
+      notifications: {
         email: boolean;
         push: boolean;
       };
