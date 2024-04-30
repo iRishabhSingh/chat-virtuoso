@@ -2,8 +2,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,8 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
   const { toast } = useToast();
@@ -49,6 +51,7 @@ export default function Login() {
         description: "Please enter a valid email address.",
       });
     }
+
     if (!isStrongPassword(password)) {
       return toast({
         title: "Incorrect Password 🤥",
@@ -57,6 +60,7 @@ export default function Login() {
     }
 
     try {
+      setIsLoading(true);
       const response = await signIn("credentials", {
         email,
         password,
@@ -79,7 +83,9 @@ export default function Login() {
         });
         router.replace("/");
       }
+      setIsLoading(false);
     } catch (error: any) {
+      setIsLoading(false);
       console.error(error.message);
     }
   };
@@ -133,8 +139,22 @@ export default function Login() {
             )}
           </div>
         </div>
-        <Button type="submit" className="w-full" onClick={handleLogin}>
-          Login
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={isLoading}
+          onClick={handleLogin}
+        >
+          {isLoading ? (
+            <LoaderCircle
+              width={15}
+              height={15}
+              strokeWidth={3}
+              className="animate-spin"
+            />
+          ) : (
+            "Login"
+          )}
         </Button>
       </div>
       <div className="mt-4 text-center text-sm">
