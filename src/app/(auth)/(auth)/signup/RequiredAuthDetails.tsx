@@ -1,40 +1,44 @@
+"use client";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { signIn } from "next-auth/react";
 import React, { useState, ChangeEvent } from "react";
+import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/components/ui/use-toast";
+import { signUpSchema } from "@/schema/signUpSchema";
 
 interface RequiredAuthDetailsProps {
-  password: string;
-  confirmPassword: string;
-  termsConditions: boolean;
-  handleSignup: () => void;
+  name: string;
+  email: string;
+  username: string;
   setName: (value: string) => void;
   setEmail: (value: string) => void;
   setUsername: (value: string) => void;
-  setPassword: (value: string) => void;
-  setConfirmPassword: (value: string) => void;
-  setTermsConditions: (value: boolean) => void;
+  setSignedUp: (value: boolean) => void;
 }
 
 const RequiredAuthDetails: React.FC<RequiredAuthDetailsProps> = ({
+  name,
+  email,
+  username,
   setName,
   setEmail,
   setUsername,
-  setPassword,
-  setConfirmPassword,
-  setTermsConditions,
-  password,
-  confirmPassword,
-  termsConditions,
-  handleSignup,
+  setSignedUp,
 }: RequiredAuthDetailsProps) => {
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [termsConditions, setTermsConditions] = useState(false);
+
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -62,6 +66,111 @@ const RequiredAuthDetails: React.FC<RequiredAuthDetailsProps> = ({
 
   const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setConfirmPassword(e.target.value);
+  };
+
+  const { toast } = useToast();
+
+  const handleSignup = async () => {
+    if (!name || !email || !username || !password || !confirmPassword) {
+      return toast({
+        title: "⚠️ Please fill in all the fields",
+        description: "Please make sure all fields are filled correctly.",
+      });
+    }
+
+    const validationResult = validationCheck({ email, username, password });
+    if (validationResult) {
+      return toast({
+        title: "⚠️ Invalid field value detected",
+        description: validationResult,
+      });
+    }
+
+    if (password !== confirmPassword) {
+      return toast({
+        title: "⚠️ Passwords do not match",
+        description: "Please make sure the passwords match.",
+      });
+    }
+
+    if (!termsConditions) {
+      return toast({
+        title: "✓ Accept terms and conditions",
+        description:
+          "Please read and accept the terms and conditions to proceed.",
+      });
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, username, password }),
+      });
+
+      if (response.status === 200) {
+        setSignedUp(true);
+        toast({
+          title: "Account created successfully. 🎉",
+          description: `Hi ${name}! welcome to Virtuoso.`,
+        });
+
+        // Sign in the user after account creation
+        const signInResponse = await signIn("credentials", {
+          redirect: false,
+          email,
+          password,
+        });
+
+        if (signInResponse?.error) {
+          toast({
+            title: "Account created but unable to sign in.",
+            description: signInResponse.error,
+          });
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(false);
+      if (response.status === 400) {
+        toast({
+          title: "👾 Credentials already in use",
+          description:
+            "Please make sure you are using a unique email and username.",
+        });
+      } else if (response.status !== 400) {
+        toast({
+          title: "Error creating account",
+          description: "We have an error creating the account",
+        });
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.error(error);
+      return toast({
+        title: "⚠️ Something went wrong",
+        description: "Please try again later.",
+      });
+    }
+  };
+
+  const validationCheck = ({
+    email,
+    username,
+    password,
+  }: {
+    email: string;
+    username: string;
+    password: string;
+  }) => {
+    try {
+      signUpSchema.parse({ email, username, password });
+      return "";
+    } catch (error: any) {
+      return error.errors[0].message;
+    }
   };
 
   return (
@@ -170,8 +279,22 @@ const RequiredAuthDetails: React.FC<RequiredAuthDetailsProps> = ({
             </Link>
           </Label>
         </div>
-        <Button type="submit" className="w-full" onClick={handleSignup}>
-          Signup
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={isLoading}
+          onClick={handleSignup}
+        >
+          {isLoading ? (
+            <LoaderCircle
+              width={15}
+              height={15}
+              strokeWidth={3}
+              className="animate-spin"
+            />
+          ) : (
+            "Signup"
+          )}
         </Button>
       </div>
       <div className="mt-4 text-center text-sm">

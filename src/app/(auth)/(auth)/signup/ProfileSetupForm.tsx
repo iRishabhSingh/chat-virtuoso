@@ -1,12 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { LoaderCircle } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const ProfileDetailsForm = ({
   name,
@@ -19,6 +20,8 @@ const ProfileDetailsForm = ({
 }) => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [alternateEmail, setAlternateEmail] = useState<string | null>(null);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
   const { toast } = useToast();
@@ -63,6 +66,7 @@ const ProfileDetailsForm = ({
     }
 
     try {
+      setIsLoading(true);
       const response = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -85,7 +89,9 @@ const ProfileDetailsForm = ({
           description: `Hi, ${name}! welcome to Virtuoso.`,
         });
       }
+      setIsLoading(false);
     } catch (error: any) {
+      setIsLoading(false);
       console.error("We had an error updating your profile.");
       return toast({
         title: "We had an error updating your profile.",
@@ -141,10 +147,24 @@ const ProfileDetailsForm = ({
         />
       </div>
       <div className="grid gap-2">
-        <Button type="submit" onClick={onContinue} className="w-full">
-          Continue
+        <Button
+          type="submit"
+          disabled={isLoading}
+          onClick={onContinue}
+          className="w-full"
+        >
+          {isLoading ? (
+            <LoaderCircle
+              width={15}
+              height={15}
+              strokeWidth={3}
+              className="animate-spin"
+            />
+          ) : (
+            "Continue"
+          )}
         </Button>
-        <Button onClick={onSkip} variant="ghost">
+        <Button onClick={onSkip} variant="link">
           Skip
         </Button>
       </div>
