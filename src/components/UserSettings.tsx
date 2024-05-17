@@ -18,15 +18,15 @@ const UserSettings = () => {
   const { data: session, status } = useSession();
 
   return (
-    <div className="absolute bottom-4 mx-3">
+    <div className="bottom-4">
       {status === "authenticated" && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-[236px] h-12">
+            <Button variant="outline" className="w-full h-12">
               {session?.user.name}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[236px]">
+          <DropdownMenuContent className="w-[228px]">
             <DropdownMenuLabel className="text-[#808080] text-center font-semibold">
               @{session?.user.username}
             </DropdownMenuLabel>
@@ -44,10 +44,10 @@ const UserSettings = () => {
       )}
       {status === "unauthenticated" && (
         <div className="flex flex-col gap-6">
-          <Button asChild variant="outline" className="w-[236px] h-12">
+          <Button asChild variant="outline" className="w-[228px] h-12">
             <Link href="/login">Login</Link>
           </Button>
-          <Button asChild className="w-[236px] h-12">
+          <Button asChild className="w-[228px] h-12">
             <Link href="/signup">Signup</Link>
           </Button>
         </div>
@@ -56,7 +56,7 @@ const UserSettings = () => {
         <Button
           disabled
           variant="outline"
-          className="w-[236px] h-12 cursor-pointer"
+          className="w-full h-12 cursor-pointer"
         >
           <LoaderCircle className="animate-spin" />
         </Button>
